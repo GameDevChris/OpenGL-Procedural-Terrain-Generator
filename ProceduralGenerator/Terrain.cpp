@@ -5,8 +5,8 @@ const int Terrain::vertexCount;
 Terrain::Terrain(int XGrid, int ZGrid, string tex)
 {
 	texture = tex;
-	xPos = XGrid * size;
-	zPos = ZGrid * size;
+	xPos = XGrid;
+	zPos = ZGrid;
 
 	GenerateVerts();
 }
@@ -15,20 +15,20 @@ void Terrain::GenerateVerts()
 {
 	for (int x = 0; x < vertexCount; x++)
 	{
-		for (int y = 0; y < vertexCount; y++)
+		for (int z = 0; z < vertexCount; z++)
 		{
-			heights[x][y] = -5;
+			heights[x][z] = 0;
 		}
 	}
 
 	int i = 0;
-	for (int x = 0; x < vertexCount; x++)
+	for (int z = 0; z < vertexCount; z++)
 	{
-		for (int y = 0; y < vertexCount; y++)
+		for (int x = 0; x < vertexCount; x++)
 		{
 			terrainVertices[i].coords[0] = (float)x;
-			terrainVertices[i].coords[1] = heights[x][y];
-			terrainVertices[i].coords[2] = (float)y;
+			terrainVertices[i].coords[1] = heights[x][z];
+			terrainVertices[i].coords[2] = (float)z;
 			terrainVertices[i].coords[3] = 1.0;
 			
 			terrainVertices[i].colors[0] = 0.0;
@@ -199,6 +199,7 @@ void Terrain::Draw()
 	
 	//cout << "There are " << sizeof(vertices) << " vertices." << endl;
 	//cout << "There are " << sizeof(indices) << " indices." << endl;
+	//glClear(GL_COLOR_BUFFER_BIT);
 
 	glBindTexture(GL_TEXTURE_2D, diffuseTexture);
 	glActiveTexture(GL_TEXTURE0);
@@ -208,10 +209,11 @@ void Terrain::Draw()
 
 	//for (int i = 0; i < vertexCount - 1; i++)
 	//{
-	//	glDrawElements(GL_TRIANGLE_STRIP, 2 * vertexCount, GL_UNSIGNED_INT, terrainIndices[i]);
+	//	glDrawElements(GL_TRIANGLE_STRIP, vertPerStrip, GL_UNSIGNED_INT, terrainIndices[i]);
 	//}
 
 	glDrawElements(GL_TRIANGLE_STRIP, (vertexCount * vertexCount) * 3, GL_UNSIGNED_INT, 0);
 
 	glBindVertexArray(0);
+	//glFlush();
 }

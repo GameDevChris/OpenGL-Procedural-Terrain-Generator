@@ -18,16 +18,20 @@ using namespace std;
 class Terrain
 {
 private:
-	const float size = 100;
-	const static int vertexCount = 10;
+	const static int vertexCount = 5;
 
 	float heights[vertexCount][vertexCount];
 	int indices[6 * (vertexCount - 1) * (vertexCount - 1)];
 
-	Vertex terrainVertices[vertexCount * vertexCount];
+	Vertex terrainVertices[vertexCount * vertexCount] = {};
+
+	const int stripCount = vertexCount - 1;
+	const int vertPerStrip = 2 * vertexCount;
+	unsigned int terrainIndices[vertexCount - 1][2 * vertexCount];
+
 
 	float vertices[(vertexCount * vertexCount) * 3];
-	unsigned int terrainIndices[vertexCount - 1][2 * vertexCount];
+	
 
 	float normals[(vertexCount * vertexCount) * 3];
 	float textureCoords[(vertexCount * vertexCount) * 2];
