@@ -5,8 +5,8 @@ Skybox* Generator::mainSkybox;
 
 float Generator::deltaTime = 0.0f;
 float Generator::lastFrame = 0.0f;
-//float Generator::cameraSpeed = 100.0f * deltaTime;
-float Generator::cameraSpeed = 100.0f;
+float Generator::cameraSpeed = 100.0f * deltaTime;
+//float Generator::cameraSpeed = 10.0f;
 
 void Generator::ResizeWindow(GLFWwindow* window, int width, int height)
 {
@@ -147,7 +147,6 @@ void Generator::Start()
 
 void Generator::Update()
 {
-	cout << cameraSpeed << endl;
 	generatorShader.Use();
 
 	//Inputs
@@ -195,14 +194,18 @@ void Generator::Update()
 
 void Generator::CreateTransforms()
 {
-	//Create View Matrix
 	viewMatrix = lookAt(vec3(mainCamera.cameraPosition), vec3(mainCamera.cameraPosition + mainCamera.cameraFront), vec3(mainCamera.cameraUp));
+
+	//View Matrix
+	terrainShader.setMat4("view", viewMatrix);
+	terrainShader.setVec3("viewPos", mainCamera.cameraPosition.x, mainCamera.cameraPosition.y, mainCamera.cameraPosition.z);
 
 	generatorShader.setMat4("view", viewMatrix);
 	generatorShader.setVec3("viewPos", mainCamera.cameraPosition.x, mainCamera.cameraPosition.y, mainCamera.cameraPosition.z);
 
 	//Create Projection Matrix
 	projectionMatrix = perspective(radians(mainCamera.fov), 960.0f / 540.0f, 0.1f, 200.0f);
+	terrainShader.setMat4("projection", projectionMatrix);
 	generatorShader.setMat4("projection", projectionMatrix);
 }
 
