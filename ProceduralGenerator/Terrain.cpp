@@ -1,18 +1,87 @@
 #include "Terrain.h"
 
-const int Terrain::vertexCount;
+//const int Terrain::vertexCount;
 
 Terrain::Terrain(int XGrid, int ZGrid, string tex)
 {
 	texture = tex;
 	xPos = XGrid;
 	zPos = ZGrid;
-
-	GenerateVerts();
 }
 
-void Terrain::GenerateVerts()
+void Terrain::Generate()
 {
+	for (int x = 0; x < chunkSize; x++)
+	{
+		for (int z = 0; z < chunkSize; z++)
+		{
+			terrain[x][z] = 0;
+		}
+	}
+
+	int i = 0;
+
+	for (int z = 0; z < chunkSize; z++)
+	{
+		for (int x = 0; x < chunkSize; x++)
+		{
+			terrainVertices[i].coords[0] = (float)x;
+			terrainVertices[i].coords[1] = terrain[x][z];
+			terrainVertices[i].coords[2] = (float)z;
+			terrainVertices[i].coords[3] = 1.0;
+
+			terrainVertices[i].colors[0] = 0.0;
+			terrainVertices[i].colors[1] = 0.0;
+			terrainVertices[i].colors[2] = 0.0;
+			terrainVertices[i].colors[3] = 1.0;
+
+			i++;
+
+		}
+	}
+
+	i = 0;
+	for (int z = 0; z < chunkSize - 1; z++)
+	{
+		i = z * chunkSize;
+		for (int x = 0; x < chunkSize * 2; x += 2)
+		{
+			terrainIndexData[z][x] = i;
+			i++;
+		}
+		for (int x = 1; x < chunkSize * 2 + 1; x += 2)
+		{
+			terrainIndexData[z][x] = i;
+			i++;
+		}
+	}
+
+			
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	//GetVerts(terrainWidth, terrainHeight);
+	//GetInds(terrainWidth, terrainHeight);
+
+
+
+	/*
 	for (int x = 0; x < vertexCount; x++)
 	{
 		for (int z = 0; z < vertexCount; z++)
@@ -21,7 +90,7 @@ void Terrain::GenerateVerts()
 		}
 	}
 
-	int i = 0;
+	/*int i = 0;
 	for (int z = 0; z < vertexCount; z++)
 	{
 		for (int x = 0; x < vertexCount; x++)
@@ -109,6 +178,8 @@ void Terrain::GenerateVerts()
 	cout << "Finished generating" << endl;
 }
 
+
+
 void Terrain::CreateTextures()
 {
 	unsigned int textureID;
@@ -155,16 +226,16 @@ void Terrain::CreateBuffers()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	cout << "There are " << sizeof(vertices) << " verts" << endl;
+	glBufferData(GL_ARRAY_BUFFER, sizeof(terrainVertices), terrainVertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(terrainIndices), terrainIndices, GL_STATIC_DRAW);
-	cout << "There are " << sizeof(terrainIndices) << " indices" << endl;
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(terrainIndexData), terrainIndexData, GL_STATIC_DRAW);
+	
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), 0);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), (GLvoid*)sizeof(terrainVertices[0].coords));
+	glEnableVertexAttribArray(1);
+
 }
 
 void Terrain::RandomizeColour()
@@ -201,10 +272,10 @@ void Terrain::Draw()
 	//cout << "There are " << sizeof(indices) << " indices." << endl;
 	//glClear(GL_COLOR_BUFFER_BIT);
 
-	glBindTexture(GL_TEXTURE_2D, diffuseTexture);
-	glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+	//glActiveTexture(GL_TEXTURE0);
 
-	glBindVertexArray(VAO);
+	//glBindVertexArray(VAO);
 	
 
 	//for (int i = 0; i < vertexCount - 1; i++)
@@ -212,8 +283,21 @@ void Terrain::Draw()
 	//	glDrawElements(GL_TRIANGLE_STRIP, vertPerStrip, GL_UNSIGNED_INT, terrainIndices[i]);
 	//}
 
-	glDrawElements(GL_TRIANGLE_STRIP, (vertexCount * vertexCount) * 3, GL_UNSIGNED_INT, 0);
-
-	glBindVertexArray(0);
+	//glDrawElements(GL_TRIANGLE_STRIP, GetIndCount(terrainWidth, terrainHeight), GL_UNSIGNED_INT, GetInds(terrainWidth, terrainHeight));
+	//
+	//
+	//glBindVertexArray(0);
 	//glFlush();
+
+
+
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// For each row - draw the triangle strip
+	for (int i = 0; i < chunkSize - 1; i++)
+	{
+		glDrawElements(GL_TRIANGLE_STRIP, vertsPerStrip, GL_UNSIGNED_INT, terrainIndexData[i]);
+	}
+
+	glFlush();
 }
