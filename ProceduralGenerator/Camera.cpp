@@ -16,7 +16,7 @@ Camera::Camera()
 	pitch = 0.0f;
 	fov = 45.0f;
 
-	cameraPosition = vec3(0.0f, 0.0f, 3.0f);
+	cameraPosition = vec3(0.0f, 10.0f, 0.0f);
 	cameraFront = vec3(0.0f, 0.0f, -1.0f);
 	cameraUp = vec3(0.0f, 1.0f, 0.0f);
 

@@ -18,9 +18,8 @@ using namespace std;
 class Terrain
 {
 private:
-
-	const float size = 100;
-	const static int vertexCount = 10;
+	int heightDisplace = -5;
+	const static int vertexCount = 20;
 
 	float heights[vertexCount][vertexCount];
 	int indices[6 * (vertexCount - 1) * (vertexCount - 1)];
