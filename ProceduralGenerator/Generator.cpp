@@ -1,5 +1,7 @@
 #include "Generator.h"
 
+
+
 Camera Generator::mainCamera;
 Light Generator::mainLight(0,10,0);
 Skybox* Generator::mainSkybox;
@@ -51,6 +53,7 @@ void Generator::processInput(GLFWwindow* window)
 		mainCamera.cameraPosition += glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
 	}
 }
+
 
 void Generator::Awake()
 {
@@ -135,18 +138,6 @@ void Generator::Generate()
 	generatorShader.SetInt("material.texture_diffuse", GL_TEXTURE0);
 	generatorShader.SetInt("material.texture_specular", GL_TEXTURE1);
 
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 void Generator::Start()
@@ -210,6 +201,9 @@ void Generator::CreateTransforms()
 {
 	viewMatrix = lookAt(vec3(mainCamera.cameraPosition), vec3(mainCamera.cameraPosition + mainCamera.cameraFront), vec3(mainCamera.cameraUp));
 	
+	mat3 normalMat = mat3(1.0);
+	normalMat = transpose(inverse(mat3(viewMatrix)));
+
 	//View Matrix
 	terrainShader.setMat4("view", viewMatrix);
 	terrainShader.setVec3("viewPos", mainCamera.cameraPosition.x, mainCamera.cameraPosition.y, mainCamera.cameraPosition.z);
@@ -225,6 +219,10 @@ void Generator::CreateTransforms()
 	terrainShader.setMat4("projection", projectionMatrix);
 	generatorShader.setMat4("projection", projectionMatrix);
 	skyboxShader.setMat4("projection", projectionMatrix);
+
+
+	//NormalMat
+	terrainShader.setMat3("normalMat", normalMat);
 }
 
 void Generator::AddTerrain(Terrain* terrain)

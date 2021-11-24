@@ -2,6 +2,13 @@
 
 struct Light
 {
+	vec4 ambCols;
+	vec4 difCols;
+	vec4 specCols;
+	vec4 coords;
+
+
+
 	float xPos;
 	float yPos;
 	float zPos;

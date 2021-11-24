@@ -21,6 +21,7 @@ using namespace std;
 class Generator
 {
 private:
+
 	static Light mainLight;
 	static Camera mainCamera;
 	static float cameraSpeed;
