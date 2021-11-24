@@ -153,8 +153,6 @@
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GeneratorFragment.fs" />
-    <None Include="GeneratorVertex.vs" />
     <None Include="ShaderFragment.fs" />
     <None Include="ShaderVertex.vs" />
     <None Include="TerrainFS.fs" />

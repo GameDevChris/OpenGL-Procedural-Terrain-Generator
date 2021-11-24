@@ -21,20 +21,12 @@ using namespace std;
 class Generator
 {
 private:
-	struct ColorHolder
-	{
-		vec4 color;
-
-		ColorHolder() {};
-	};
-
-
-
 	static Light mainLight;
 	static Camera mainCamera;
 	static float cameraSpeed;
-	static float deltaTime;
-	static float lastFrame;
+
+	int screenWidth = 1920;
+	int screenHeight = 1080;
 
 	//Shader generatorShader;
 	Shader skyboxShader;
@@ -45,7 +37,9 @@ private:
 	static void processInput(GLFWwindow* window);
 
 public:
-	mat4 viewMatrix = mat4(1.0f);
+
+	mat3 normalMat = mat3(1.0);
+	mat4 viewMatrix = mat4(1.0);
 	mat4 projectionMatrix = mat4(1.0f);
 	static Skybox* mainSkybox;
 

@@ -70,12 +70,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GeneratorVertex.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="GeneratorFragment.fs">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="ShaderVertex.vs">
       <Filter>Resource Files</Filter>
     </None>

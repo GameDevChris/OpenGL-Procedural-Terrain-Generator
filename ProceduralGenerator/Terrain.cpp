@@ -2,11 +2,10 @@
 
 //const int Terrain::vertexCount;
 
-Terrain::Terrain(int XGrid, int ZGrid, string tex)
+Terrain::Terrain(int XGrid, int ZGrid)
 {
-	texture = tex;
-	xPos = XGrid;
-	zPos = ZGrid;
+	xPos += -(vertexCount/2);
+	zPos += -(vertexCount / 2);
 
 	Generate();
 }
@@ -15,20 +14,20 @@ void Terrain::CalculateHeights()
 {
 	float h1, h2, h3, h4, aver, h;
 
-	int seed = 8282838;
+	//int seed = 13729327;
 	//cout << "Input seed!" << endl;
 	//cin >> seed;
-
+	srand(1);
 	h1 = (rand() % 10) / 5.0 - 1.0;
 	h2 = (rand() % 10) / 5.0 - 1.0;
 	h3 = (rand() % 10) / 5.0 - 1.0;
 	h4 = (rand() % 10) / 5.0 - 1.0;
 
 
-	heights[0][0] = h1   +heightDisplace;
-	heights[vertexCount - 1][0] = h2 + heightDisplace;
-	heights[vertexCount - 1][vertexCount - 1] = h3 + heightDisplace;
-	heights[0][vertexCount - 1] = h4  + heightDisplace;
+	heights[0][0] = h1 * terrainAmplifier + heightDisplace;
+	heights[vertexCount - 1][0] = h2 * terrainAmplifier + heightDisplace;
+	heights[vertexCount - 1][vertexCount - 1] = h3 * terrainAmplifier + heightDisplace;
+	heights[0][vertexCount - 1] = h4 * terrainAmplifier + heightDisplace;
 
 	//heights[0][0] = (float(rand()) / float((RAND_MAX)) * 5.0f);
 
@@ -53,7 +52,7 @@ void Terrain::CalculateHeights()
 				h4 = heights[x + step_size][y + step_size];
 				aver = (h1 + h2 + h3 + h4) / 4.0;
 				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h * rand_max;
+				aver = aver + h * terrainAmplifier * rand_max;
 				heights[x + step_size / 2][y + step_size / 2] = aver;
 			}
 
@@ -70,7 +69,7 @@ void Terrain::CalculateHeights()
 				else { h4 = 0.0; }
 				aver = (h1 + h2 + h3 + h4) / (float)count;
 				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h  * rand_max;
+				aver = aver + h * terrainAmplifier * rand_max;
 				heights[x][y + step_size / 2] = aver;
 
 				//second one
@@ -83,7 +82,7 @@ void Terrain::CalculateHeights()
 				else { h4 = 0.0; }
 				aver = (h1 + h2 + h3 + h4) / (float)count;
 				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h  * rand_max;
+				aver = aver + h * terrainAmplifier * rand_max;
 				heights[x + step_size / 2][y] = aver;
 
 				//third one
@@ -95,7 +94,7 @@ void Terrain::CalculateHeights()
 				else { h4 = 0.0; }
 				aver = (h1 + h2 + h3 + h4) / (float)count;
 				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h  * rand_max;
+				aver = aver + h * terrainAmplifier * rand_max;
 				heights[x + step_size][y + step_size / 2] = aver;
 
 				//fourth one
@@ -107,7 +106,7 @@ void Terrain::CalculateHeights()
 				else { h4 = 0.0; }
 				aver = (h1 + h2 + h3 + h4) / (float)count;
 				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h  * rand_max;
+				aver = aver + h * terrainAmplifier * rand_max;
 				heights[x + step_size / 2][y + step_size] = aver;
 			}
 
@@ -134,9 +133,9 @@ void Terrain::Generate()
 	{
 		for (int y = 0; y < vertexCount; y++)
 		{
-			terrainVertices[i].coords.x = (float)x;
+			terrainVertices[i].coords.x = (float)x + xPos;
 			terrainVertices[i].coords.y = heights[x][y];
-			terrainVertices[i].coords.z = (float)y;
+			terrainVertices[i].coords.z = (float)y + zPos;
 			terrainVertices[i].coords.w = 1.0;
 
 			terrainVertices[i].normals.x = 0.0;
@@ -219,25 +218,25 @@ void Terrain::Generate()
 		terrainVertices[i].normals = norVec;
 	}
 
-
-
-
 	cout << "Finished generating" << endl;
 }
 
 void Terrain::CreateTextures()
 {
+
+
+
+
 	unsigned int textureID;
 	glGenTextures(1, &textureID);
 
 	stbi_set_flip_vertically_on_load(false);
 	int width, height, nrChannels;
 	
-	unsigned char* data = stbi_load(texture.c_str(), &width, &height, &nrChannels, 0);
+	unsigned char* data = stbi_load(texturePaths[0].c_str(), &width, &height, &nrChannels, 0);
 	if (data)
 	{
-
-		glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+		glBindTexture(GL_TEXTURE_2D, leavesTex);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -275,6 +274,24 @@ void Terrain::CreateBuffers()
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), (GLvoid*)sizeof(terrainVertices[0].normals));
 	glEnableVertexAttribArray(1);
 
+}
+
+void Terrain::SetShaderProperties()
+{
+	myShader->setVec4("terrainFandB.ambRefl", 1.0, 1.0, 1.0, 1.0);
+	myShader->setVec4("terrainFandB.difRefl", 1.0, 1.0, 1.0, 1.0);
+	myShader->setVec4("terrainFandB.specRefl", 1.0, 1.0, 1.0, 1.0);
+	myShader->setVec4("terrainFandB.emitCols", 0.0, 0.0, 0.0, 1.0);
+	myShader->SetFloat("terrainFandB.shininess", 50.0f);
+
+	myShader->setVec4("light0.ambCols", 0.0, 0.0, 0.0, 1.0);
+	myShader->setVec4("light0.difCols", 1.0, 1.0, 1.0, 1.0);
+	myShader->setVec4("light0.specCols", 1.0, 1.0, 1.0, 1.0);
+	myShader->setVec4("light0.coords", 1.0, 1.0, 0.0, 0.0);
+
+	myShader->setVec4("globAmb", 0.2, 0.2, 0.2, 1.0);
+
+	myShader->setVec4("overrideColour", 1, 1, 0, 1);
 }
 
 void Terrain::RandomizeColour()

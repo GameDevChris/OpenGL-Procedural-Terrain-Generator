@@ -11,28 +11,17 @@ vec4 emitCols;
 float shininess;
 };
 
-out vec4 RandomVec;
-
 uniform mat3 normalMat;
 uniform vec4 globAmb;
 uniform mat4 view;
 uniform mat4 projection;
-
-uniform float RandValueX;
-uniform float RandValueY;
-uniform float RandValueZ;
-uniform float RandValueW;
 
 out vec3 normalExport;
 
 void main()
 {
 	normalExport = terrainNormals;
-    //normalExport = normalize(normalMat * normalExport);
-
-	normalExport = normalize(mat3(vec3(1, 1, 1), vec3(0, 0, 0), vec3(0, 0, 0)) * normalExport);
-
-	//RandomVec = vec4(RandValueX, RandValueY, RandValueZ, RandValueW);
+    normalExport = normalize(normalMat * normalExport);
 
 	gl_Position = projection * view * vec4(aPos, 1.0);
 }

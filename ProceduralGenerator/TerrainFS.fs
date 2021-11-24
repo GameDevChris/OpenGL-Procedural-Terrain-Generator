@@ -24,45 +24,23 @@ struct Material
  float shininess;
 };
 uniform Material terrainFandB;
-
 uniform vec4 overrideColour;
 vec3 normal, lightDirection;
 vec4 fAndBDif;
 
-//float rnd(float i) 
-//{
-//	return mod(4000.*sin(23464.345*i+45.345),1.);
-//}
+uniform Sampler2D leavesTex;
+uniform Sampler2D snowTex;
+uniform Sampler2D snowGrassTex;
+uniform Sampler2D grassTex;
+uniform Sampler2D grassRockTex;
+uniform Sampler2D rockTex;
+uniform Sampler2D desertTex;
+uniform Sampler2D beachTex;
 
 void main()
 {   
-    //terrainFandB.ambRefl = vec4(1.0, 1.0, 1.0, 1.0);
-    //terrainFandB.difRefl = vec4(1.0, 1.0, 1.0, 1.0);
-    //terrainFandB.specRefl = vec4(1.0, 1.0, 1.0, 1.0);
-    //terrainFandB.emitCols = vec4(0.0, 0.0, 0.0, 1.0);
-
-    //light0.ambCols = vec4(0.0, 0.0, 0.0, 1.0);
-    //light0.difCols = vec4(1.0, 1.0, 1.0, 1.0);
-    //light0.specCols = vec4(1.0, 1.0, 1.0, 1.0);
-    //light0.coords = = vec4(1.0, 10.0, 0.0, 0.0);
-
-
-    //normal = normalize(normalExport);
-    //lightDirection = normalize(vec3(vec4(1.0, 10.0, 0.0, 0.0)));
-    //fAndBDif = max(dot(normal, lightDirection), 0.0f) * (vec4(1.0, 1.0, 1.0, 1.0) * vec4(1.0, 1.0, 1.0, 1.0)); 
-    //FragColor =  vec4(vec3(min(fAndBDif, vec4(1.0))), 1.0); 
-
-    //normal = normalize(normalExport);
-    //lightDirection = normalize(vec3(vec4(1.0, 1.0, 0.0, 0.0)));
-    //FragColor = max(dot(normal, lightDirection), 0.0f) * (vec4(1.0, 1.0, 1.0, 1.0) * vec4(1.0, 1.0, 1.0, 1.0));
-
-
-    //lightDirection = normalize(vec3(light0.coords));
-    //fAndBDif = max(dot(normal, lightDirection), 0.0f) * (light0.difCols * terrainFandB.difRefl); 
-    //FragColor =  vec4(vec3(min(fAndBDif, vec4(1.0))), 1.0); 
-
-    //FragColor = vec4(1,1,0,1);
-    FragColor = overrideColour;
-
-    //FragColor = RandomVec;
+    normal = normalize(normalExport);
+    lightDirection = normalize(vec3(light0.coords));
+    fAndBDif = max(dot(normal, lightDirection), 0.0f) * (light0.difCols *  terrainFandB.difRefl); 
+    FragColor =  vec4(vec3(min(fAndBDif, vec4(1.0))), 1.0); 
 }

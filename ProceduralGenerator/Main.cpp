@@ -11,10 +11,10 @@ int main()
 	
 	myGenerator.mainSkybox = new Skybox();
 	
-	Terrain firstTerrain(0, 0, "floor.png");
+	Terrain* terrain = new Terrain(0, 0);
 	//Terrain secondTerrain(1, 0, "floor.png");
 	
-	myGenerator.Grid.push_back(&firstTerrain);
+	myGenerator.Grid.push_back(terrain);
 	//myGenerator.Grid.push_back(&secondTerrain);
 	
 	//Generating objects
