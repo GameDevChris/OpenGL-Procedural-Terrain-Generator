@@ -21,6 +21,14 @@ using namespace std;
 class Generator
 {
 private:
+	struct ColorHolder
+	{
+		vec4 color;
+
+		ColorHolder() {};
+	};
+
+
 
 	static Light mainLight;
 	static Camera mainCamera;
@@ -28,7 +36,7 @@ private:
 	static float deltaTime;
 	static float lastFrame;
 
-	Shader generatorShader;
+	//Shader generatorShader;
 	Shader skyboxShader;
 	Shader terrainShader;
 	GLFWwindow* ProjectWindow;

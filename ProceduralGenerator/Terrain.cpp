@@ -20,13 +20,9 @@ void Terrain::CalculateHeights()
 	//cin >> seed;
 
 	h1 = (rand() % 10) / 5.0 - 1.0;
-	cout << h1 << endl;
 	h2 = (rand() % 10) / 5.0 - 1.0;
-	cout << h2 << endl;
 	h3 = (rand() % 10) / 5.0 - 1.0;
-	cout << h3 << endl;
 	h4 = (rand() % 10) / 5.0 - 1.0;
-	cout << h4 << endl;
 
 
 	heights[0][0] = h1   +heightDisplace;
@@ -138,15 +134,15 @@ void Terrain::Generate()
 	{
 		for (int y = 0; y < vertexCount; y++)
 		{
-			terrainVertices[i].coords[0] = (float)x;
-			terrainVertices[i].coords[1] = heights[x][y];
-			terrainVertices[i].coords[2] = (float)y;
-			terrainVertices[i].coords[3] = 1.0;
+			terrainVertices[i].coords.x = (float)x;
+			terrainVertices[i].coords.y = heights[x][y];
+			terrainVertices[i].coords.z = (float)y;
+			terrainVertices[i].coords.w = 1.0;
 
-			terrainVertices[i].colors[0] = 0.0;
-			terrainVertices[i].colors[1] = 0.0;
-			terrainVertices[i].colors[2] = 0.0;
-			terrainVertices[i].colors[3] = 1.0;
+			terrainVertices[i].normals.x = 0.0;
+			terrainVertices[i].normals.y = 0.0;
+			terrainVertices[i].normals.z = 0.0;
+
 
 			i++;
 		}
@@ -168,15 +164,63 @@ void Terrain::Generate()
 		}
 	}
 
-	i = 0;
-	for(int x = 0; x< (vertexCount * vertexCount) * 3; x+=3)
-	{
-		vertices[x] = terrainVertices[i].coords[0];
-		vertices[x+1] = terrainVertices[i].coords[1];
-		vertices[x+2] = terrainVertices[i].coords[2];
 
-		i++;
+	///compute normal vectors for each vertices
+	int index1, index2, index3;
+	float dot_value;
+	glm::vec3 Pt1, Pt2, Pt3, ttVec, edgeVec1, edgeVec2, norVec, upvec;
+	upvec.x = 0.0; upvec.y = 1.0; upvec.z = 0.0;
+	for (int z = 0; z < vertexCount - 1; z++)
+	{
+		for (int x = 0; x < (vertexCount * 2 - 2); x++)
+		{
+			index1 = terrainIndices[z][x];
+			index2 = terrainIndices[z][x + 1];
+			index3 = terrainIndices[z][x + 2];
+
+			Pt1.x = terrainVertices[index1].coords.x;
+			Pt1.y = terrainVertices[index1].coords.y;
+			Pt1.z = terrainVertices[index1].coords.z;
+
+			Pt2.x = terrainVertices[index2].coords.x;
+			Pt2.y = terrainVertices[index2].coords.y;
+			Pt2.z = terrainVertices[index2].coords.z;
+
+			Pt3.x = terrainVertices[index3].coords.x;
+			Pt3.y = terrainVertices[index3].coords.y;
+			Pt3.z = terrainVertices[index3].coords.z;
+
+			edgeVec1 = Pt2 - Pt1;
+			edgeVec2 = Pt3 - Pt1;
+			if (x % 2 == 1)
+				ttVec = cross(edgeVec2, edgeVec1);
+			else
+				ttVec = cross(edgeVec1, edgeVec2);
+
+			dot_value = dot(ttVec, upvec);
+			if (dot_value < 0.0000001)
+				norVec = -ttVec;
+			else
+				norVec = ttVec;
+
+			terrainVertices[index1].normals = norVec + terrainVertices[index1].normals;
+			terrainVertices[index2].normals = norVec + terrainVertices[index2].normals;
+			terrainVertices[index3].normals = norVec + terrainVertices[index3].normals;
+		}
 	}
+
+
+	int total;
+	total = vertexCount * vertexCount;
+	for (i = 0; i < (total - 1); i++)
+	{
+		ttVec = terrainVertices[i].normals;
+		norVec = normalize(ttVec);
+		terrainVertices[i].normals = norVec;
+	}
+
+
+
 
 	cout << "Finished generating" << endl;
 }
@@ -189,11 +233,9 @@ void Terrain::CreateTextures()
 	stbi_set_flip_vertically_on_load(false);
 	int width, height, nrChannels;
 	
-	cout << "Loading plane face " << endl;
 	unsigned char* data = stbi_load(texture.c_str(), &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		cout << "it workie " << endl;
 
 		glBindTexture(GL_TEXTURE_2D, diffuseTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
@@ -225,11 +267,13 @@ void Terrain::CreateBuffers()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(terrainVertices), terrainVertices, GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), 0);
 	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), (GLvoid*)sizeof(terrainVertices[0].normals));
+	glEnableVertexAttribArray(1);
 
 }
 
@@ -239,22 +283,18 @@ void Terrain::RandomizeColour()
 
 	srand(time(NULL));
 	float randomValX = rand() % 100 + 1;
-	cout << "Random value X is " << randomValX << endl;
 	myShader->SetFloat("RandValueX", randomValX / 100);
 
 	srand(time(NULL));
 	float randomValY = rand() % 50 + 1;
-	cout << "Random value Y is " << randomValY << endl;
 	myShader->SetFloat("RandValueY", randomValY / 100);
 
 	srand(time(NULL));
 	float randomValZ = rand() % 10 + 1;
-	cout << "Random value Z is " << randomValZ << endl;
 	myShader->SetFloat("RandValueZ", randomValZ / 100);
 
 	srand(time(NULL));
 	float randomValW = rand() % 20 + 1;
-	cout << "Random value W is " << randomValW << endl;
 	myShader->SetFloat("RandValueW", randomValW / 100);
 }
 

@@ -31,25 +31,21 @@ void Generator::processInput(GLFWwindow* window)
 	//Camera controls
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		cout << "Cam forward" << endl;
 		mainCamera.cameraPosition += cameraSpeed * mainCamera.cameraFront;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		cout << "Cam backward" << endl;
 		mainCamera.cameraPosition -= cameraSpeed * mainCamera.cameraFront;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		cout << "Cam left" << endl;
 		mainCamera.cameraPosition -= glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		cout << "Cam right" << endl;
 		mainCamera.cameraPosition += glm::normalize(glm::cross(mainCamera.cameraFront, mainCamera.cameraUp)) * cameraSpeed;
 	}
 }
@@ -103,8 +99,8 @@ void Generator::Awake()
 	//Build & Compile shader programs
 
 	//Main engine shader
-	generatorShader = Shader("GeneratorVertex.vs", "GeneratorFragment.fs");
-	generatorShader.Start();
+	//generatorShader = Shader("GeneratorVertex.vs", "GeneratorFragment.fs");
+	//generatorShader.Start();
 
 	//Skybox shader
 	skyboxShader = Shader("ShaderVertex.vs", "ShaderFragment.fs");
@@ -118,12 +114,10 @@ void Generator::Awake()
 
 void Generator::Generate()
 {
-	cout << "Generating generator elements" << endl;
 
 	//Create buffers, textures and model for skybox
 	mainSkybox->CreateBuffers();
 	mainSkybox->CreateTextures();
-
 
 	for(int i = 0; i<Grid.size(); i++)
 	{
@@ -135,8 +129,8 @@ void Generator::Generate()
 	}
 
 	//Set material properties in shader
-	generatorShader.SetInt("material.texture_diffuse", GL_TEXTURE0);
-	generatorShader.SetInt("material.texture_specular", GL_TEXTURE1);
+	//generatorShader.SetInt("material.texture_diffuse", GL_TEXTURE0);
+	//generatorShader.SetInt("material.texture_specular", GL_TEXTURE1);
 
 }
 
@@ -152,7 +146,7 @@ void Generator::Start()
 
 void Generator::Update()
 {
-	generatorShader.Use();
+	//generatorShader.Use();
 
 	//Inputs
 	processInput(ProjectWindow);
@@ -167,7 +161,8 @@ void Generator::Update()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Setup view and projection matrix
-	generatorShader.Use();
+	//generatorShader.Use();
+
 	CreateTransforms();
 
 	////Skybox
@@ -199,17 +194,22 @@ void Generator::Update()
 
 void Generator::CreateTransforms()
 {
+	terrainShader.Use();
+	skyboxShader.Use();
+
 	viewMatrix = lookAt(vec3(mainCamera.cameraPosition), vec3(mainCamera.cameraPosition + mainCamera.cameraFront), vec3(mainCamera.cameraUp));
 	
 	mat3 normalMat = mat3(1.0);
 	normalMat = transpose(inverse(mat3(viewMatrix)));
 
+	//mat3 test = mat3(vec3(1, 1, 1), vec3(0, 0, 0), vec3(0, 0, 0));
+
 	//View Matrix
 	terrainShader.setMat4("view", viewMatrix);
 	terrainShader.setVec3("viewPos", mainCamera.cameraPosition.x, mainCamera.cameraPosition.y, mainCamera.cameraPosition.z);
 
-	generatorShader.setMat4("view", viewMatrix);
-	generatorShader.setVec3("viewPos", mainCamera.cameraPosition.x, mainCamera.cameraPosition.y, mainCamera.cameraPosition.z);
+	//generatorShader.setMat4("view", viewMatrix);
+	//generatorShader.setVec3("viewPos", mainCamera.cameraPosition.x, mainCamera.cameraPosition.y, mainCamera.cameraPosition.z);
 
 	skyboxShader.setMat4("view", viewMatrix);
 	skyboxShader.setVec3("viewPos", mainCamera.cameraPosition.x, mainCamera.cameraPosition.y, mainCamera.cameraPosition.z);
@@ -217,13 +217,35 @@ void Generator::CreateTransforms()
 	//Create Projection Matrix
 	projectionMatrix = perspective(radians(mainCamera.fov), 960.0f / 540.0f, 0.1f, 200.0f);
 	terrainShader.setMat4("projection", projectionMatrix);
-	generatorShader.setMat4("projection", projectionMatrix);
+	//generatorShader.setMat4("projection", projectionMatrix);
 	skyboxShader.setMat4("projection", projectionMatrix);
 
 
-	//NormalMat
+	//Terrain Data
+	terrainShader.setVec4("terrainFandB.ambRefl", 1.0, 1.0, 1.0, 1.0);
+	terrainShader.setVec4("terrainFandB.difRefl", 1.0, 1.0, 1.0, 1.0);
+	terrainShader.setVec4("terrainFandB.specRefl", 1.0, 1.0, 1.0, 1.0);
+	terrainShader.setVec4("terrainFandB.emitCols", 0.0, 0.0, 0.0, 1.0);
+	terrainShader.SetFloat("terrainFandB.shininess", 50.0f);
+
+	terrainShader.setVec4("light0.ambCols", 0.0, 0.0, 0.0, 1.0);
+	terrainShader.setVec4("light0.difCols", 1.0, 1.0, 1.0, 1.0);
+	terrainShader.setVec4("light0.specCols", 1.0, 1.0, 1.0, 1.0);
+	terrainShader.setVec4("light0.coords", 1.0, 10.0, 0.0, 0.0);
+
 	terrainShader.setMat3("normalMat", normalMat);
+	terrainShader.setVec4("globAmb", 0.2, 0.2, 0.2, 1.0);
+
+	//terrainShader.setVec4("overrideColour", 1, 1, 0, 1);
+
+	ColorHolder holder;
+	holder.color = vec4(1, 1, 0, 1);
+
+	glUniform4fv(glGetUniformLocation(terrainShader.ID, "overrideColour"), 1, &holder.color[0]);
 }
+
+
+
 
 void Generator::AddTerrain(Terrain* terrain)
 {

@@ -4,17 +4,17 @@ layout (location = 1) in vec3 terrainNormals;
 
 struct Material
 {
-vec4 ambRefl = vec4(1.0, 1.0, 1.0, 1.0);
-vec4 difRefl = vec4(1.0, 1.0, 1.0, 1.0);
-vec4 specRefl = vec4(1.0, 1.0, 1.0, 1.0);
-vec4 emitCols = vec4(0.0, 0.0, 0.0, 1.0);
-float shininess = 50.0f;
+vec4 ambRefl;
+vec4 difRefl;
+vec4 specRefl;
+vec4 emitCols;
+float shininess;
 };
 
 out vec4 RandomVec;
 
 uniform mat3 normalMat;
-uniform vec4 globAmb = vec4(0.2, 0.2, 0.2, 1.0);
+uniform vec4 globAmb;
 uniform mat4 view;
 uniform mat4 projection;
 
@@ -28,7 +28,9 @@ out vec3 normalExport;
 void main()
 {
 	normalExport = terrainNormals;
-    normalExport = normalize(normalMat * normalExport);
+    //normalExport = normalize(normalMat * normalExport);
+
+	normalExport = normalize(mat3(vec3(1, 1, 1), vec3(0, 0, 0), vec3(0, 0, 0)) * normalExport);
 
 	//RandomVec = vec4(RandValueX, RandValueY, RandValueZ, RandValueW);
 

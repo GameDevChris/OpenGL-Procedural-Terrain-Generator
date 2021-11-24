@@ -1,9 +1,10 @@
 #pragma once
+#include <glm.hpp>
 
 struct Vertex
 {
-	float coords[4];
-	float colors[4];
+	glm::vec4 coords;
+	glm::vec3 normals;
 
 	Vertex()
 	{}

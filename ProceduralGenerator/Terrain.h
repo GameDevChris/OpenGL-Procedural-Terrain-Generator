@@ -26,7 +26,6 @@ private:
 
 	Vertex terrainVertices[vertexCount * vertexCount];
 
-	float vertices[(vertexCount * vertexCount) * 3];
 	unsigned int terrainIndices[vertexCount - 1][2 * vertexCount];
 
 	float normals[(vertexCount * vertexCount) * 3];
