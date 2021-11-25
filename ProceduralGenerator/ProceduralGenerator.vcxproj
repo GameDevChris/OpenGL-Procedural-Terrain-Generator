@@ -133,6 +133,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Cloud.cpp" />
     <ClCompile Include="Generator.cpp" />
     <ClCompile Include="Glad\glad.c" />
     <ClCompile Include="Main.cpp" />
@@ -140,9 +141,12 @@
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Cloud.h" />
+    <ClInclude Include="FastNoiseLite.h" />
     <ClInclude Include="Generator.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
@@ -151,12 +155,17 @@
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Terrain.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CloudFS.fs" />
+    <None Include="CloudVS.vs" />
     <None Include="ShaderFragment.fs" />
     <None Include="ShaderVertex.vs" />
     <None Include="TerrainFS.fs" />
     <None Include="TerrainVS.vs" />
+    <None Include="WaterFS.fs" />
+    <None Include="WaterVS.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

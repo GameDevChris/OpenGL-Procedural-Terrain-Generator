@@ -4,7 +4,7 @@ Camera Generator::mainCamera;
 Light Generator::mainLight(0,10,0);
 Skybox* Generator::mainSkybox;
 
-float Generator::cameraSpeed = 1.0f;
+float Generator::cameraSpeed = 10.0f;
 
 void Generator::ResizeWindow(GLFWwindow* window, int width, int height)
 {
@@ -16,10 +16,6 @@ void Generator::processInput(GLFWwindow* window)
 	//Exit Game
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 	{
-		glDeleteVertexArrays(1, &(mainSkybox->VAO));
-		glDeleteBuffers(1, &(mainSkybox->VBO));
-		delete mainSkybox;
-
 		glfwTerminate();
 	}
 
@@ -56,10 +52,10 @@ void Generator::processInput(GLFWwindow* window)
 	}
 }
 
-
 void Generator::Awake()
 {
 	Grid.clear();
+	WaterGrid.clear();
 
 	cout << "Initialising generator" << endl;
 
@@ -101,6 +97,10 @@ void Generator::Awake()
 	//Enable multisampling and depth test
 	glEnable(GL_MULTISAMPLE);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
 
 	//Build & Compile shader programs
 
@@ -111,6 +111,14 @@ void Generator::Awake()
 	//Terrain shader
 	terrainShader = Shader("TerrainVS.vs", "TerrainFS.fs");
 	terrainShader.Start();
+
+	//Water shader
+	waterShader = Shader("WaterVS.vs", "WaterFS.fs");
+	waterShader.Start();
+
+	//Cloud shader
+	cloudShader = Shader("CloudVS.vs", "CloudFS.fs");
+	cloudShader.Start();
 }
 
 void Generator::Generate()
@@ -118,13 +126,25 @@ void Generator::Generate()
 	mainSkybox->CreateBuffers();
 	mainSkybox->CreateTextures();
 
+	for (int i = 0; i < WaterGrid.size(); i++)
+	{
+		WaterGrid[i]->myShader = &waterShader;
+		WaterGrid[i]->CreateBuffers();
+		WaterGrid[i]->CreateTextures();
+	}
+
+	for (int i = 0; i < CloudGrid.size(); i++)
+	{
+		CloudGrid[i]->myShader = &cloudShader;
+		CloudGrid[i]->CreateBuffers();
+		CloudGrid[i]->CreateTextures();
+	}
+
 	for(int i = 0; i<Grid.size(); i++)
 	{
+		Grid[i]->myShader = &terrainShader;
 		Grid[i]->CreateBuffers();
 		Grid[i]->CreateTextures();
-		Grid[i]->myShader = &terrainShader;
-
-		Grid[i]->RandomizeColour();
 	}
 }
 
@@ -140,7 +160,6 @@ void Generator::Start()
 
 void Generator::Update()
 {
-	//viewMatrix = translate(viewMatrix, vec3(10, 0, 0));
 	//Inputs
 	processInput(ProjectWindow);
 
@@ -151,10 +170,9 @@ void Generator::Update()
 	//Setup view and projection matrix
 	CreateTransforms();
 
-	////Skybox
+	//Skybox
 	glDepthFunc(GL_LEQUAL);
 	skyboxShader.Use();
-	//viewMatrix = glm::mat4(glm::mat3(viewMatrix));
 	skyboxShader.setMat4("view", viewMatrix);
 	skyboxShader.setMat4("projection", projectionMatrix);
 	mainSkybox->Draw();
@@ -165,12 +183,37 @@ void Generator::Update()
 	{
 		glDepthFunc(GL_LEQUAL);
 		Grid[i]->myShader->Use();
-		//viewMatrix = glm::mat4(glm::mat3(viewMatrix));
 		Grid[i]->myShader->setMat4("view", viewMatrix);
 		Grid[i]->myShader->setMat3("normalMat", normalMat);
 		Grid[i]->myShader->setMat4("projection", projectionMatrix);
 		Grid[i]->SetShaderProperties();
 		Grid[i]->Draw();
+		glDepthFunc(GL_LESS);
+	}
+
+	//Water
+	for (int i = 0; i < WaterGrid.size(); i++)
+	{
+		glDepthFunc(GL_LEQUAL);
+		WaterGrid[i]->myShader->Use();
+		WaterGrid[i]->myShader->setMat4("view", viewMatrix);
+		WaterGrid[i]->myShader->setMat3("normalMat", normalMat);
+		WaterGrid[i]->myShader->setMat4("projection", projectionMatrix);
+		WaterGrid[i]->SetShaderProperties();
+		WaterGrid[i]->Draw();
+		glDepthFunc(GL_LESS);
+	}
+
+	//Cloud
+	for (int i = 0; i < CloudGrid.size(); i++)
+	{
+		glDepthFunc(GL_LEQUAL);
+		CloudGrid[i]->myShader->Use();
+		CloudGrid[i]->myShader->setMat4("view", viewMatrix);
+		CloudGrid[i]->myShader->setMat3("normalMat", normalMat);
+		CloudGrid[i]->myShader->setMat4("projection", projectionMatrix);
+		CloudGrid[i]->SetShaderProperties();
+		CloudGrid[i]->Draw();
 		glDepthFunc(GL_LESS);
 	}
 
@@ -184,15 +227,16 @@ void Generator::CreateTransforms()
 	viewMatrix = mat4(1.0);
 	viewMatrix = lookAt(mainCamera.cameraPosition, vec3(mainCamera.cameraPosition + mainCamera.cameraFront), vec3(mainCamera.cameraUp));
 	
-
-	projectionMatrix = glm::perspective(glm::radians(mainCamera.fov), (float)(screenWidth / screenHeight), 0.1f, 1500.0f);
+	projectionMatrix = glm::perspective(glm::radians(mainCamera.fov), (float)screenWidth / (float)screenHeight, 0.1f, 4000.0f);
 	normalMat = transpose(inverse(mat3(viewMatrix)));
 }
 
-
-
-
 void Generator::AddTerrain(Terrain* terrain)
 {
+	Water* water = new Water(terrain->parentXPos, terrain->parentZPos);
+	Cloud* cloud = new Cloud(terrain->parentXPos, terrain->parentZPos);
+
+	CloudGrid.push_back(cloud);
+	WaterGrid.push_back(water);
 	Grid.push_back(terrain);
 }

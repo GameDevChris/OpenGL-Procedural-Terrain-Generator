@@ -14,6 +14,8 @@
 #include "Shader.h"
 #include "Skybox.h"
 #include "Terrain.h"
+#include "Cloud.h"
+#include "Water.h"
 #include "Light.h"
 
 using namespace std;
@@ -31,6 +33,9 @@ private:
 	//Shader generatorShader;
 	Shader skyboxShader;
 	Shader terrainShader;
+	Shader waterShader;
+	Shader cloudShader;
+
 	GLFWwindow* ProjectWindow;
 
 	static void ResizeWindow(GLFWwindow* window, int width, int height);
@@ -43,7 +48,8 @@ public:
 	mat4 projectionMatrix = mat4(1.0f);
 	static Skybox* mainSkybox;
 
-	Terrain* mainTerrain;
+	vector<Cloud*> CloudGrid;
+	vector<Water*> WaterGrid;
 	vector<Terrain*> Grid;
 
 	void Awake();
@@ -51,6 +57,7 @@ public:
 	void Start();
 	void Update();
 	void CreateTransforms();
+
 	void AddTerrain(Terrain* terrain);
 };
 

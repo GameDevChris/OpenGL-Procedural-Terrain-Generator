@@ -4,8 +4,11 @@
 
 Terrain::Terrain(int XGrid, int ZGrid)
 {
-	xPos += -(vertexCount/2);
-	zPos += -(vertexCount / 2);
+	parentXPos = XGrid;
+	parentZPos = ZGrid;
+
+	xPos = XGrid - (vertexCount/2);
+	zPos = ZGrid - (vertexCount/2);
 
 	Generate();
 }
@@ -17,17 +20,19 @@ void Terrain::CalculateHeights()
 	//int seed = 13729327;
 	//cout << "Input seed!" << endl;
 	//cin >> seed;
-	srand(1);
+	//srand(1);
+
+	srand(time(NULL));
 	h1 = (rand() % 10) / 5.0 - 1.0;
 	h2 = (rand() % 10) / 5.0 - 1.0;
 	h3 = (rand() % 10) / 5.0 - 1.0;
 	h4 = (rand() % 10) / 5.0 - 1.0;
 
 
-	heights[0][0] = h1 * terrainAmplifier + heightDisplace;
-	heights[vertexCount - 1][0] = h2 * terrainAmplifier + heightDisplace;
-	heights[vertexCount - 1][vertexCount - 1] = h3 * terrainAmplifier + heightDisplace;
-	heights[0][vertexCount - 1] = h4 * terrainAmplifier + heightDisplace;
+	heights[0][0] = h1 * terrainAmplifier;
+	heights[vertexCount - 1][0] = h2 * terrainAmplifier;
+	heights[vertexCount - 1][vertexCount - 1] = h3 * terrainAmplifier;
+	heights[0][vertexCount - 1] = h4 * terrainAmplifier;
 
 	//heights[0][0] = (float(rand()) / float((RAND_MAX)) * 5.0f);
 
@@ -116,13 +121,14 @@ void Terrain::CalculateHeights()
 	
 }
 
+
 void Terrain::Generate()
 {
 	for (int x = 0; x < vertexCount; x++)
 	{
 		for (int y = 0; y < vertexCount; y++)
 		{
-			heights[x][y] = 0 + heightDisplace;
+			heights[x][y] = 0;
 		}
 	}
 
@@ -133,11 +139,11 @@ void Terrain::Generate()
 	{
 		for (int y = 0; y < vertexCount; y++)
 		{
-			terrainVertices[i].coords.x = (float)x + xPos;
+			terrainVertices[i].coords.x = ((float)x * spacing) + xPos;
 			terrainVertices[i].coords.y = heights[x][y];
-			terrainVertices[i].coords.z = (float)y + zPos;
+			terrainVertices[i].coords.z = ((float)y * spacing) + zPos;
 			terrainVertices[i].coords.w = 1.0;
-
+			 
 			terrainVertices[i].normals.x = 0.0;
 			terrainVertices[i].normals.y = 0.0;
 			terrainVertices[i].normals.z = 0.0;
@@ -218,43 +224,64 @@ void Terrain::Generate()
 		terrainVertices[i].normals = norVec;
 	}
 
+	float fTextureS = float(vertexCount) * 0.2f;
+	float fTextureT = float(vertexCount) * 0.2f;
+	i = 0;
+	for (int y = 0; y < vertexCount; y++)
+	{
+		for (int x = 0; x < vertexCount; x++) 
+		{
+			float fScaleC = float(x) / float(vertexCount - 1);
+			float fScaleR = float(y) / float(vertexCount - 1);
+
+			terrainVertices[i].texCoords = glm::vec2(fTextureS * fScaleC, fTextureT * fScaleR);
+
+			i++;
+		}
+	}
+
+
 	cout << "Finished generating" << endl;
 }
 
 void Terrain::CreateTextures()
 {
-
-
-
-
-	unsigned int textureID;
-	glGenTextures(1, &textureID);
-
-	stbi_set_flip_vertically_on_load(false);
-	int width, height, nrChannels;
-	
-	unsigned char* data = stbi_load(texturePaths[0].c_str(), &width, &height, &nrChannels, 0);
-	if (data)
+	for (int i = 0; i < texturePaths.size(); i++)
 	{
-		glBindTexture(GL_TEXTURE_2D, leavesTex);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
+		unsigned int textureID;
+		glGenTextures(1, &textureID);
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		stbi_set_flip_vertically_on_load(false);
+		int width, height, nrChannels;
 
+		unsigned char* data = stbi_load(texturePaths[i].c_str(), &width, &height, &nrChannels, 0);
+
+		if (data)
+		{
+			cout << "Generated texture with path " << texturePaths[i].c_str() << endl;
+
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		}
+
+		else
+		{
+			cout << "Failed to load texture " << i << endl;
+		}
+
+		stbi_image_free(data);
+
+		textureIDs.push_back(textureID);
 	}
 
-	else
-	{
-		cout << "It no workie" << endl;
-	}
-
-	stbi_image_free(data);
-
-	diffuseTexture = textureID;
+	BindTexturesOnUnits();
 }
 
 void Terrain::CreateBuffers()
@@ -271,9 +298,29 @@ void Terrain::CreateBuffers()
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), 0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), (GLvoid*)sizeof(terrainVertices[0].normals));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), (GLvoid*)sizeof(terrainVertices[0].coords));
 	glEnableVertexAttribArray(1);
 
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(terrainVertices[0]), (GLvoid*)(sizeof(terrainVertices[0].coords) + sizeof(terrainVertices[0].normals)));
+	glEnableVertexAttribArray(2);
+
+}
+
+void Terrain::BindTexturesOnUnits()
+{
+	myShader->Use();
+	myShader->SetInt("snowTex", 0);
+	myShader->SetInt("grassTex", 1);
+	myShader->SetInt("rockTex", 2);
+	myShader->SetInt("beachTex", 3);
+
+
+	
+	for (int i = 0; i < textureIDs.size(); i++)
+	{
+		glActiveTexture(GL_TEXTURE0 + i);
+		glBindTexture(GL_TEXTURE_2D, textureIDs[i]);
+	}
 }
 
 void Terrain::SetShaderProperties()
@@ -294,40 +341,17 @@ void Terrain::SetShaderProperties()
 	myShader->setVec4("overrideColour", 1, 1, 0, 1);
 }
 
-void Terrain::RandomizeColour()
-{
-	myShader->Use();
 
-	srand(time(NULL));
-	float randomValX = rand() % 100 + 1;
-	myShader->SetFloat("RandValueX", randomValX / 100);
-
-	srand(time(NULL));
-	float randomValY = rand() % 50 + 1;
-	myShader->SetFloat("RandValueY", randomValY / 100);
-
-	srand(time(NULL));
-	float randomValZ = rand() % 10 + 1;
-	myShader->SetFloat("RandValueZ", randomValZ / 100);
-
-	srand(time(NULL));
-	float randomValW = rand() % 20 + 1;
-	myShader->SetFloat("RandValueW", randomValW / 100);
-}
 
 void Terrain::Draw()
 {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glBindTexture(GL_TEXTURE_2D, diffuseTexture);
-	glActiveTexture(GL_TEXTURE0);
+	BindTexturesOnUnits();
 
 	glBindVertexArray(VAO);
-
-
 	for (int i = 0; i < vertexCount - 1; i++)
 	{
 		glDrawElements(GL_TRIANGLE_STRIP, 2 * vertexCount, GL_UNSIGNED_INT, terrainIndices[i]);
 	}
-
 	glBindVertexArray(0);
 }

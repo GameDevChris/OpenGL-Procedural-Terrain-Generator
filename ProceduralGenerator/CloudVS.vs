@@ -2,6 +2,7 @@
 layout (location = 0) in vec4 aPos;
 layout (location = 1) in vec3 terrainNormals;
 layout (location = 2) in vec2 terrainTexCoords;
+layout (location = 3) in float noiseValue;
 
 struct Material
 {
@@ -19,14 +20,15 @@ uniform mat4 projection;
 
 out vec3 normalExport;
 out vec2 texCoordsExport;
-out float yValue;
+out float noise;
 
 void main()
 {
+	noise = noiseValue;
 	normalExport = terrainNormals;
     normalExport = normalize(normalMat * normalExport);
 	texCoordsExport = terrainTexCoords;
 
 	gl_Position = projection * view * aPos;
-	yValue = aPos.y;
+	
 }
