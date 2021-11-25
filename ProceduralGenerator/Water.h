@@ -38,7 +38,10 @@ private:
 	float zPos;
 
 	std::string texturePath = "./Water/waterTex.jpg";
+	std::string foamPath = "./Water/foamTex.jpg";
+
 	unsigned int textureID;
+	unsigned int foamID;
 
 	//Buffer
 	unsigned int VBO, VAO;

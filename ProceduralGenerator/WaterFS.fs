@@ -2,6 +2,7 @@
 in vec3 normalExport;
 out vec4 FragColor;
 in vec2 texCoordsExport;
+in float yValue;
 
 struct Light
 {
@@ -31,13 +32,23 @@ vec3 normal, lightDirection;
 vec4 fAndBDif;
 
 uniform sampler2D waterTex;
+uniform sampler2D foamTex;
+
 vec4 textureMap;
 
 void main()
 {   
-    textureMap = texture(waterTex, texCoordsExport);
-    textureMap.a = 0.8;
-    
+    if(yValue > -15.5)
+    {
+        textureMap = mix(texture(foamTex, texCoordsExport), texture(waterTex, texCoordsExport), 0.5);
+        textureMap.a = 0.8;
+    }
+
+    else
+    {
+        textureMap = texture(waterTex, texCoordsExport);
+        textureMap.a = 0.8;
+    }
 
     normal = normalize(normalExport);
     lightDirection = normalize(vec3(light0.coords));

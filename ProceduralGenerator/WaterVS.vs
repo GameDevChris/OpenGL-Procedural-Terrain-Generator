@@ -28,6 +28,8 @@ uniform float waveAmplitude;
 uniform float crestDist;
 uniform float waveFlow;
 
+out float yValue;
+
 void main()
 {
 	float dirSup = sqrt(9.81 * 2 * 3.14159265 / crestDist);
@@ -48,6 +50,11 @@ void main()
     normalExport = normalize(normalMat * normalExport);
 	texCoordsExport = terrainTexCoords;
 
+
+
+	updatedPos.y += 1.0f * (sin(updatedPos.x + waveFlow) + cos(updatedPos.z + waveFlow)) + 1.0f;
+
 	gl_Position = projection * view * updatedPos;
+	yValue = updatedPos.y;
 	
 }

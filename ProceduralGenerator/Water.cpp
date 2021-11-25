@@ -106,8 +106,8 @@ void Water::Generate()
 		waterVertices[i].normals = norVec;
 	}
 
-	float fTextureS = float(vertexCount) * 0.1f;
-	float fTextureT = float(vertexCount) * 0.1f;
+	float fTextureS = float(vertexCount) * 0.05f;
+	float fTextureT = float(vertexCount) * 0.05f;
 	i = 0;
 	for (int y = 0; y < vertexCount; y++)
 	{
@@ -125,6 +125,7 @@ void Water::Generate()
 
 void Water::CreateTextures()
 {
+	//Water
 	glGenTextures(1, &textureID);
 
 	stbi_set_flip_vertically_on_load(false);
@@ -151,6 +152,35 @@ void Water::CreateTextures()
 	}
 
 	stbi_image_free(data);
+
+
+	//foam
+	glGenTextures(1, &foamID);
+
+	stbi_set_flip_vertically_on_load(false);
+	int width2, height2, nrChannels2;
+
+	unsigned char* data2 = stbi_load(foamPath.c_str(), &width2, &height2, &nrChannels2, 0);
+
+	if (data2)
+	{
+		glBindTexture(GL_TEXTURE_2D, foamID);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	}
+
+	else
+	{
+		std::cout << "Failed to load foam texture " << std::endl;
+	}
+
+	stbi_image_free(data2);
 
 	BindTexturesOnUnits();
 }
@@ -182,6 +212,12 @@ void Water::BindTexturesOnUnits()
 
 	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	myShader->Use();
+	myShader->SetInt("foamTex", 6);
+
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, foamID);
 }
 
 void Water::SetShaderProperties()
@@ -204,8 +240,8 @@ void Water::SetShaderProperties()
 	myShader->setVec4("waveDirection", 1, 0, 1, 0);
 	myShader->SetInt("waveAmount", 1);
 	myShader->SetFloat("waveFrequency", 0.01);
-	myShader->SetFloat("waveSpeed", 0.1);
-	myShader->SetFloat("waveAmplitude", 10);
+	myShader->SetFloat("waveSpeed", 0.05);
+	myShader->SetFloat("waveAmplitude", 15);
 	myShader->SetFloat("crestDist", 0.1);
 }
 
@@ -219,7 +255,7 @@ void Water::Draw()
 
 	myShader->SetFloat("waveFlow", flowValue);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	BindTexturesOnUnits();
 
 
