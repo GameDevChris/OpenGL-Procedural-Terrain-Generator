@@ -200,15 +200,26 @@ void Water::SetShaderProperties()
 	myShader->setVec4("globAmb", 0.2, 0.2, 0.2, 1.0);
 
 	myShader->setVec4("overrideColour", 1, 1, 0, 1);
+
+	myShader->setVec4("waveDirection", 1, 0, 1, 0);
+	myShader->SetInt("waveAmount", 1);
+	myShader->SetFloat("waveFrequency", 0.01);
+	myShader->SetFloat("waveSpeed", 0.1);
+	myShader->SetFloat("waveAmplitude", 10);
+	myShader->SetFloat("crestDist", 0.1);
 }
 
 void Water::Draw()
 {
-	flowValue += 0.004f;
-	
+	timeSinceStart = glfwGetTime();
+	deltaTime = timeSinceStart - oldTimeSinceStart;
+	oldTimeSinceStart = timeSinceStart;
+
+	flowValue += deltaTime;
+
 	myShader->SetFloat("waveFlow", flowValue);
 
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	BindTexturesOnUnits();
 
 

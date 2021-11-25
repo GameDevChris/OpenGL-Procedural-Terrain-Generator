@@ -16,6 +16,10 @@
 class Water
 {
 private:
+	float oldTimeSinceStart = 0;
+	float timeSinceStart = 0;
+	float deltaTime = 0;
+
 	int spacing = 2;
 
 	const static int vertexCount = 1025;

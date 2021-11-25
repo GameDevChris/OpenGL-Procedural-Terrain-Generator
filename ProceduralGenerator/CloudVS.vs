@@ -24,6 +24,7 @@ out float noise;
 
 void main()
 {
+
 	noise = noiseValue;
 	normalExport = terrainNormals;
     normalExport = normalize(normalMat * normalExport);
