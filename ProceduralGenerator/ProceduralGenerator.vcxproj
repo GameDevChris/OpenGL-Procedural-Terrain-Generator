@@ -148,8 +148,6 @@
     <ClInclude Include="Cloud.h" />
     <ClInclude Include="FastNoiseLite.h" />
     <ClInclude Include="Generator.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="Material.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="stb_image.h" />

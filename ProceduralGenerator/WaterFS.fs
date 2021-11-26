@@ -38,9 +38,16 @@ vec4 textureMap;
 
 void main()
 {   
-    if(yValue > -15.5)
+    if(yValue > -14)
     {
         textureMap = mix(texture(foamTex, texCoordsExport), texture(waterTex, texCoordsExport), 0.5);
+        textureMap.a = 0.8;
+    }
+
+
+    else if(yValue > -15.5)
+    {
+        textureMap = mix(texture(foamTex, texCoordsExport), texture(waterTex, texCoordsExport), 0.8);
         textureMap.a = 0.8;
     }
 

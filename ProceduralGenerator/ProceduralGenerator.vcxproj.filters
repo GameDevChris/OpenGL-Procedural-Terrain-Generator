@@ -13,11 +13,32 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Objects">
+      <UniqueIdentifier>{90cad62f-aea0-413c-99b6-9999f11c38ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Libraries">
+      <UniqueIdentifier>{0ef79945-2f4b-4fa7-81f1-f0c6a77c5ff1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Cloud">
+      <UniqueIdentifier>{89cd3a2e-5972-4803-9c4e-1b441dce902b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Terrain">
+      <UniqueIdentifier>{33217047-f7df-444a-8dd0-397f40b152a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Skybox">
+      <UniqueIdentifier>{1d31ca40-38b5-43e5-a145-66a877f2a9e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Water">
+      <UniqueIdentifier>{1177f96f-3a92-400e-bc75-efa49065b1c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Libraries">
+      <UniqueIdentifier>{487a4b93-caf4-4202-92b0-973896431236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects">
+      <UniqueIdentifier>{16821440-87f8-4b94-8f59-68a28dd0dfa1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Glad\glad.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,20 +51,23 @@
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Skybox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="stb_image.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Libraries</Filter>
     </ClCompile>
-    <ClCompile Include="Terrain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Water.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Glad\glad.c">
+      <Filter>Source Files\Libraries</Filter>
     </ClCompile>
     <ClCompile Include="Cloud.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Water.cpp">
+      <Filter>Source Files\Objects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -56,58 +80,52 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Skybox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Terrain.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Light.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Skybox.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Terrain.h">
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Water.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Cloud.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Objects</Filter>
     </ClInclude>
     <ClInclude Include="FastNoiseLite.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Libraries</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files\Libraries</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ShaderVertex.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="ShaderFragment.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="TerrainVS.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="TerrainFS.fs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="WaterVS.vs">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="WaterFS.fs">
-      <Filter>Resource Files</Filter>
+    <None Include="CloudFS.fs">
+      <Filter>Resource Files\Cloud</Filter>
     </None>
     <None Include="CloudVS.vs">
-      <Filter>Resource Files</Filter>
+      <Filter>Resource Files\Cloud</Filter>
     </None>
-    <None Include="CloudFS.fs">
-      <Filter>Resource Files</Filter>
+    <None Include="TerrainFS.fs">
+      <Filter>Resource Files\Terrain</Filter>
+    </None>
+    <None Include="TerrainVS.vs">
+      <Filter>Resource Files\Terrain</Filter>
+    </None>
+    <None Include="ShaderVertex.vs">
+      <Filter>Resource Files\Skybox</Filter>
+    </None>
+    <None Include="ShaderFragment.fs">
+      <Filter>Resource Files\Skybox</Filter>
+    </None>
+    <None Include="WaterFS.fs">
+      <Filter>Resource Files\Water</Filter>
+    </None>
+    <None Include="WaterVS.vs">
+      <Filter>Resource Files\Water</Filter>
     </None>
   </ItemGroup>
 </Project>

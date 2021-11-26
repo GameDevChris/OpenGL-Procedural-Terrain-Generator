@@ -17,11 +17,6 @@ void Terrain::CalculateHeights()
 {
 	float h1, h2, h3, h4, aver, h;
 
-	//int seed = 13729327;
-	//cout << "Input seed!" << endl;
-	//cin >> seed;
-	//srand(1);
-
 	srand(time(NULL));
 	h1 = (rand() % 10) / 5.0 - 1.0;
 	h2 = (rand() % 10) / 5.0 - 1.0;
@@ -239,9 +234,6 @@ void Terrain::Generate()
 			i++;
 		}
 	}
-
-
-	cout << "Finished generating" << endl;
 }
 
 void Terrain::CreateTextures()

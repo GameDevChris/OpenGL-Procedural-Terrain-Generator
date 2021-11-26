@@ -16,6 +16,14 @@
 class Water
 {
 private:
+	int waveDirXSign = 1;
+	float waveDirValX = 0;
+
+	bool zFliping = false;
+	int zFlipSign = 1;
+	float waveDirZCounter = 0;
+	float waveDirValZ = 1;
+
 	float oldTimeSinceStart = 0;
 	float timeSinceStart = 0;
 	float deltaTime = 0;

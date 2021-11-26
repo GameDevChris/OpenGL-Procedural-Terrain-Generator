@@ -1,7 +1,6 @@
 #include "Generator.h"
 
 Camera Generator::mainCamera;
-Light Generator::mainLight(0,10,0);
 Skybox* Generator::mainSkybox;
 
 float Generator::cameraSpeed = 10.0f;
@@ -57,8 +56,6 @@ void Generator::Awake()
 	Grid.clear();
 	WaterGrid.clear();
 
-	cout << "Initialising generator" << endl;
-
 	//Initialise GLFW
 	glfwInit();
 
@@ -71,7 +68,7 @@ void Generator::Awake()
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	//Create window
-	ProjectWindow = glfwCreateWindow(screenWidth, screenHeight, "Epic Gamer Generator", NULL, NULL);
+	ProjectWindow = glfwCreateWindow(screenWidth, screenHeight, "Chris Bodsworth - 322 - CW2", NULL, NULL);
 
 	if (ProjectWindow == NULL)
 	{
@@ -99,7 +96,6 @@ void Generator::Awake()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 
 
 	//Build & Compile shader programs
@@ -150,8 +146,6 @@ void Generator::Generate()
 
 void Generator::Start()
 {
-	cout << "Starting generator" << endl;
-
 	while (!glfwWindowShouldClose(ProjectWindow))
 	{
 		Update();

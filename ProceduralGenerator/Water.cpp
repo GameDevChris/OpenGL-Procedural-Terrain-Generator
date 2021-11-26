@@ -237,7 +237,7 @@ void Water::SetShaderProperties()
 
 	myShader->setVec4("overrideColour", 1, 1, 0, 1);
 
-	myShader->setVec4("waveDirection", 1, 0, 1, 0);
+	myShader->setVec4("waveDirection", 3, 0, 1, 0);
 	myShader->SetInt("waveAmount", 1);
 	myShader->SetFloat("waveFrequency", 0.01);
 	myShader->SetFloat("waveSpeed", 0.05);
@@ -253,12 +253,73 @@ void Water::Draw()
 
 	flowValue += deltaTime;
 
+	waveDirValX += (deltaTime / 25)*waveDirXSign;
+	
+	if (!zFliping)
+	{
+		waveDirZCounter += (deltaTime / 10);
+
+		if (waveDirZCounter > 10)
+		{
+			if (waveDirValZ == 1)
+			{
+				zFlipSign = -1;
+			}
+
+			else
+			{
+				zFlipSign = 1;
+			}
+
+			zFliping = true;
+			waveDirZCounter = 0;
+		}
+	}
+
+	else 
+	{
+		if (zFlipSign == 1) 
+		{
+			waveDirValZ += (deltaTime / 10);
+
+			if (waveDirValZ > 1)
+			{
+				waveDirValZ = 1;
+				zFliping = false;
+			}
+
+		}
+
+		else
+		{
+			waveDirValZ -= (deltaTime / 10);
+
+			if (waveDirValZ < -1)
+			{
+				waveDirValZ = -1;
+				zFliping = false;
+			}
+		}
+	}
+	
+
+	if (waveDirValX > 1)
+	{
+		waveDirXSign = -1;
+	}
+
+	if (waveDirValX < -1)
+	{
+		waveDirXSign = 1;
+	}
+
+	
+
 	myShader->SetFloat("waveFlow", flowValue);
+	myShader->setVec4("waveDirection", waveDirValX, 0, waveDirValZ, 0);
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	BindTexturesOnUnits();
-
-
 
 	glBindVertexArray(VAO);
 	for (int i = 0; i < vertexCount - 1; i++)

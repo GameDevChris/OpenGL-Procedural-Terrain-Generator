@@ -64,5 +64,4 @@ void Skybox::CreateTextures()
 
 	diffuseTexture = textureID;
 
-
 }

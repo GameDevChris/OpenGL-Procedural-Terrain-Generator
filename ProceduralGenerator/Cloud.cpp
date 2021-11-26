@@ -1,6 +1,5 @@
 #include "Cloud.h"
 
-
 Cloud::Cloud(int XGrid, int ZGrid)
 {
 	xPos = XGrid - (vertexCount / 2);
@@ -37,8 +36,6 @@ void Cloud::Generate()
 			float randomVal = (rand() % 10) / 5.0 - 1.0;
 			noise.SetSeed(randomVal);
 			cloudVertices[i].noise = noise.GetNoise(cloudVertices[i].coords.x, cloudVertices[i].coords.y, cloudVertices[i].coords.z);
-
-			//std::cout << cloudVertices[i].noise << std::endl;
 
 			i++;
 		}
@@ -214,7 +211,6 @@ void Cloud::SetShaderProperties()
 
 void Cloud::Draw()
 {
-
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	BindTexturesOnUnits();
 

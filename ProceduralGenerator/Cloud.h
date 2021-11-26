@@ -18,8 +18,6 @@
 class Cloud
 {
 private:
-
-	int cloudSeed = 100;
 	FastNoiseLite noise;
 
 	int spacing = 2;
