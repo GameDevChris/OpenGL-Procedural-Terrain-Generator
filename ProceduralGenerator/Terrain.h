@@ -18,6 +18,9 @@ using namespace std;
 class Terrain
 {
 private:
+	float h1, h2, h3, h4, aver, h;
+	float rand_max = 1; 
+
 	int spacing = 2;
 
 	float xPos;
@@ -61,6 +64,8 @@ private:
 
 	void Generate();
 	void CalculateHeights();
+	void DiamondStep(int coord1, int coord2, int stepVal);
+	void SquareStep(int coord1, int coord2, int stepVal);
 
 public:
 	float parentXPos;

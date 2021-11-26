@@ -197,7 +197,7 @@ void Generator::Update()
 		WaterGrid[i]->Draw();
 		glDepthFunc(GL_LESS);
 	}
-
+	
 	//Cloud
 	for (int i = 0; i < CloudGrid.size(); i++)
 	{

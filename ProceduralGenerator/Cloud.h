@@ -37,7 +37,7 @@ private:
 	float xPos;
 	float zPos;
 
-	std::string texturePath = "./Cloud/cloudTex.png";
+	std::string texturePath = "./Cloud/cloudTex.jpg";
 	unsigned int textureID;
 
 	//Buffer

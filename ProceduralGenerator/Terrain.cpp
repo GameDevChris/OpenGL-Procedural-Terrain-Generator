@@ -15,8 +15,6 @@ Terrain::Terrain(int XGrid, int ZGrid)
 
 void Terrain::CalculateHeights()
 {
-	float h1, h2, h3, h4, aver, h;
-
 	srand(time(NULL));
 	h1 = (rand() % 10) / 5.0 - 1.0;
 	h2 = (rand() % 10) / 5.0 - 1.0;
@@ -29,15 +27,10 @@ void Terrain::CalculateHeights()
 	heights[vertexCount - 1][vertexCount - 1] = h3 * terrainAmplifier;
 	heights[0][vertexCount - 1] = h4 * terrainAmplifier;
 
-	//heights[0][0] = (float(rand()) / float((RAND_MAX)) * 5.0f);
-
-
 	int step_size, tt, H, count;
-	float rand_max;
 	tt = vertexCount;
 	step_size = tt - 1;
 	H = 1;
-	rand_max = 1;
 
 	while (step_size > 1)
 	{
@@ -45,69 +38,13 @@ void Terrain::CalculateHeights()
 
 			for (int y = 0; y < vertexCount - 1; y += step_size)
 			{
-				//diamond_step(x, y, stepsize)
-				h1 = heights[x][y];
-				h2 = heights[x + step_size][y];
-				h3 = heights[x][y + step_size];
-				h4 = heights[x + step_size][y + step_size];
-				aver = (h1 + h2 + h3 + h4) / 4.0;
-				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h * terrainAmplifier * rand_max;
-				heights[x + step_size / 2][y + step_size / 2] = aver;
+				DiamondStep(x, y, step_size);
 			}
 
 		for (int x = 0; x < vertexCount - 1; x += step_size)
 			for (int y = 0; y < vertexCount - 1; y += step_size)
 			{
-				//square_step(x, y)
-				count = 0;
-				h1 = heights[x][y];  count++;
-				h2 = heights[x][y + step_size];  count++; //below
-				if ((x - step_size / 2) >= 0) { h3 = heights[x - step_size / 2][y + step_size / 2]; count++; }
-				else { h3 = 0.0; }
-				if ((x + step_size / 2) < vertexCount) { h4 = heights[x + step_size / 2][y + step_size / 2]; count++; }
-				else { h4 = 0.0; }
-				aver = (h1 + h2 + h3 + h4) / (float)count;
-				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h * terrainAmplifier * rand_max;
-				heights[x][y + step_size / 2] = aver;
-
-				//second one
-				count = 0;
-				h1 = heights[x][y];  count++;
-				h2 = heights[x + step_size][y];  count++; //below
-				if ((y - step_size / 2) >= 0) { h3 = heights[x + step_size / 2][y - step_size / 2]; count++; }
-				else { h3 = 0.0; }
-				if ((y + step_size / 2) < vertexCount) { h4 = heights[x + step_size / 2][y + step_size / 2]; count++; }
-				else { h4 = 0.0; }
-				aver = (h1 + h2 + h3 + h4) / (float)count;
-				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h * terrainAmplifier * rand_max;
-				heights[x + step_size / 2][y] = aver;
-
-				//third one
-				count = 0;
-				h1 = heights[x + step_size][y];  count++;
-				h2 = heights[x + step_size][y + step_size];  count++; //below
-				h3 = heights[x + step_size / 2][y + step_size / 2]; count++;
-				if ((x + 3 * step_size / 2) < vertexCount) { h4 = heights[x + 3 * step_size / 2][y + step_size / 2]; count++; }
-				else { h4 = 0.0; }
-				aver = (h1 + h2 + h3 + h4) / (float)count;
-				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h * terrainAmplifier * rand_max;
-				heights[x + step_size][y + step_size / 2] = aver;
-
-				//fourth one
-				count = 0;
-				h1 = heights[x][y + step_size];  count++;
-				h2 = heights[x + step_size][y + step_size];  count++; //below
-				h3 = heights[x + step_size / 2][y + step_size / 2]; count++;
-				if ((y + 3 * step_size / 2) < vertexCount) { h4 = heights[x + step_size / 2][y + 3 * step_size / 2]; count++; }
-				else { h4 = 0.0; }
-				aver = (h1 + h2 + h3 + h4) / (float)count;
-				h = (rand() % 10) / 5.0 - 1.0;
-				aver = aver + h * terrainAmplifier * rand_max;
-				heights[x + step_size / 2][y + step_size] = aver;
+				SquareStep(x, y, step_size);
 			}
 
 		rand_max = rand_max * pow(2, -H);
@@ -116,6 +53,74 @@ void Terrain::CalculateHeights()
 	
 }
 
+void Terrain::DiamondStep(int coord1, int coord2, int stepVal)
+{
+	h1 = heights[coord1][coord2];
+	h2 = heights[coord1 + stepVal][coord2];
+	h3 = heights[coord1][coord2 + stepVal];
+	h4 = heights[coord1 + stepVal][coord2 + stepVal];
+	aver = (h1 + h2 + h3 + h4) / 4.0;
+	h = (rand() % 10) / 5.0 - 1.0;
+	aver = aver + h * terrainAmplifier * rand_max;
+	heights[coord1 + stepVal / 2][coord2 + stepVal / 2] = aver;
+}
+
+void Terrain::SquareStep(int coord1, int coord2, int stepVal)
+{
+	int count = 0;
+	int x = coord1;
+	int y = coord2;
+	int step_size = stepVal;
+
+	//Corner 1
+	h1 = heights[x][y];  count++;
+	h2 = heights[x][y + step_size];  count++; //below
+	if ((x - step_size / 2) >= 0) { h3 = heights[x - step_size / 2][y + step_size / 2]; count++; }
+	else { h3 = 0.0; }
+	if ((x + step_size / 2) < vertexCount) { h4 = heights[x + step_size / 2][y + step_size / 2]; count++; }
+	else { h4 = 0.0; }
+	aver = (h1 + h2 + h3 + h4) / (float)count;
+	h = (rand() % 10) / 5.0 - 1.0;
+	aver = aver + h * terrainAmplifier * rand_max;
+	heights[x][y + step_size / 2] = aver;
+
+	//Corner 2
+	count = 0;
+	h1 = heights[x][y];  count++;
+	h2 = heights[x + step_size][y];  count++; //below
+	if ((y - step_size / 2) >= 0) { h3 = heights[x + step_size / 2][y - step_size / 2]; count++; }
+	else { h3 = 0.0; }
+	if ((y + step_size / 2) < vertexCount) { h4 = heights[x + step_size / 2][y + step_size / 2]; count++; }
+	else { h4 = 0.0; }
+	aver = (h1 + h2 + h3 + h4) / (float)count;
+	h = (rand() % 10) / 5.0 - 1.0;
+	aver = aver + h * terrainAmplifier * rand_max;
+	heights[x + step_size / 2][y] = aver;
+
+	//Corner 3
+	count = 0;
+	h1 = heights[x + step_size][y];  count++;
+	h2 = heights[x + step_size][y + step_size];  count++; //below
+	h3 = heights[x + step_size / 2][y + step_size / 2]; count++;
+	if ((x + 3 * step_size / 2) < vertexCount) { h4 = heights[x + 3 * step_size / 2][y + step_size / 2]; count++; }
+	else { h4 = 0.0; }
+	aver = (h1 + h2 + h3 + h4) / (float)count;
+	h = (rand() % 10) / 5.0 - 1.0;
+	aver = aver + h * terrainAmplifier * rand_max;
+	heights[x + step_size][y + step_size / 2] = aver;
+
+	//Corner 4
+	count = 0;
+	h1 = heights[x][y + step_size];  count++;
+	h2 = heights[x + step_size][y + step_size];  count++; //below
+	h3 = heights[x + step_size / 2][y + step_size / 2]; count++;
+	if ((y + 3 * step_size / 2) < vertexCount) { h4 = heights[x + step_size / 2][y + 3 * step_size / 2]; count++; }
+	else { h4 = 0.0; }
+	aver = (h1 + h2 + h3 + h4) / (float)count;
+	h = (rand() % 10) / 5.0 - 1.0;
+	aver = aver + h * terrainAmplifier * rand_max;
+	heights[x + step_size / 2][y + step_size] = aver;
+}
 
 void Terrain::Generate()
 {
@@ -306,8 +311,6 @@ void Terrain::BindTexturesOnUnits()
 	myShader->SetInt("rockTex", 2);
 	myShader->SetInt("beachTex", 3);
 
-
-	
 	for (int i = 0; i < textureIDs.size(); i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
@@ -332,8 +335,6 @@ void Terrain::SetShaderProperties()
 
 	myShader->setVec4("overrideColour", 1, 1, 0, 1);
 }
-
-
 
 void Terrain::Draw()
 {

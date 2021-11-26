@@ -40,7 +40,7 @@ void main()
 
     if(noise > 0)
     {
-        textureMap.a = 1.0;
+        textureMap.a = 0.7;
     }
 
     else

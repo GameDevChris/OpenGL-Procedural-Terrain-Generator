@@ -62,12 +62,12 @@ public:
 
 	vector<string> faces
 	{
-			"./trance/left.jpg",
-			"./trance/right.jpg",	
-			"./trance/top.jpg",
-			"./trance/bot.jpg",
-			"./trance/front.jpg",
-			"./trance/back.jpg",
+			"./Skybox/left.jpg",
+			"./Skybox/right.jpg",	
+			"./Skybox/top.jpg",
+			"./Skybox/bot.jpg",
+			"./Skybox/front.jpg",
+			"./Skybox/back.jpg",
 	};
 
 	//Buffer
